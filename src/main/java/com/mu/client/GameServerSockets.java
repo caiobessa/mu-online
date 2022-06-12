@@ -1,12 +1,10 @@
 package com.mu.client;
 
-import com.mu.client.Client;
-import com.mu.client.socket.action.ShowLoginAction;
+import com.caio.mu.packets.ShowLoginAction;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;

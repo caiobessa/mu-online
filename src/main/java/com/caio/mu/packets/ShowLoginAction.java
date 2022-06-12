@@ -1,6 +1,7 @@
-package com.mu.client.socket.action;
+package com.caio.mu.packets;
 
 public class ShowLoginAction {
+
 
 
     public byte[] showLogin(){
