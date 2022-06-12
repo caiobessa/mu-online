@@ -12,25 +12,26 @@ public class GameServerEntered extends C1HeaderWithSubCode {
 
     public static final Byte HEADER_TYPE = (byte) 0xC1;
     public static final Byte CODE = (byte) 0xF1;
-    public static byte SUB_CODE = (byte) 0x00;
-    public static int LENGTH = (byte) 12;
+    public static final Byte LENGTH = (byte) 12;
+    public static final Byte SUB_CODE = (byte) 0x00;
 
-    private List<Byte> data;
     private Boolean success;
     private Integer clientId;
     private String VersionString;
     private String Version;
 
-    private GameServerEntered(List<Byte> data) {
-        super(data);
-        setData(data);
-        setCode(CODE);
-        setLength( (byte) Math.min(data.size(), LENGTH));
-        setSubCode(SUB_CODE);
+    private GameServerEntered(String versionString, String version, Integer clientId) {
+        super(HEADER_TYPE, LENGTH, CODE, SUB_CODE);
+        success = true;
+        setVersionString(versionString);
+        setVersion(version);
+        setClientId(clientId);
     }
 
-    public List<Byte> getData(){
-        return getData();
+    public List<Byte> getData() {
+        List<Byte> convert = convert();
+        convert.set(4, (byte) 1);
+        return convert;
     }
 
 //    public C1HeaderWithSubCode Header = (byte) new (this._data);

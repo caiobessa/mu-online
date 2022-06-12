@@ -1,20 +1,15 @@
 package com.caio.mu.packets;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class C1HeaderWithSubCode {
-
-    public C1HeaderWithSubCode(List<Byte> packet){
-
-    }
-
-
-    private List<Byte> data =  new ArrayList<>();
 
     private Byte type;
     private Byte length;
@@ -22,11 +17,14 @@ public class C1HeaderWithSubCode {
     private Byte subCode;
 
 
-    private List<Data> getData(){
+
+    protected List<Byte> convert(){
+        List<Byte> data = new ArrayList<>();
         data.set(0, type);
         data.set(1, length);
         data.set(2, code);
         data.set(3, subCode);
+        return data;
     }
 
 }
