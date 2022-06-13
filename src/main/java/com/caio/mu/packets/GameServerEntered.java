@@ -26,8 +26,8 @@ public class GameServerEntered extends C1HeaderWithSubCode {
 
     public GameServerEntered() {
         super(HEADER_TYPE, LENGTH, CODE, SUB_CODE);
-        success = true;
-        setClientId(clientId);
+        this.success = true;
+        this.clientId = getClientId();
     }
 
     public byte[] toArray() {
@@ -36,11 +36,7 @@ public class GameServerEntered extends C1HeaderWithSubCode {
         gameServerEnteredAsArray[4] = (byte) new BooleanUtils().transformToByte(success);
         gameServerEnteredAsArray[5] = playerId;
         gameServerEnteredAsArray[6] = 0;
-        gameServerEnteredAsArray[7] = clientVersionAsArray[0];
-        gameServerEnteredAsArray[8] = clientVersionAsArray[1];
-        gameServerEnteredAsArray[9] = clientVersionAsArray[2];
-        gameServerEnteredAsArray[10] = clientVersionAsArray[3];
-        gameServerEnteredAsArray[11] = clientVersionAsArray[4];
+        System.arraycopy( clientVersionAsArray, 0, gameServerEnteredAsArray, 7, clientVersionAsArray.length);
         return gameServerEnteredAsArray;
     }
 
