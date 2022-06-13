@@ -18,13 +18,8 @@ public class C1HeaderWithSubCode {
 
 
 
-    protected List<Byte> convert(){
-        List<Byte> data = new ArrayList<>();
-        data.set(0, type);
-        data.set(1, length);
-        data.set(2, code);
-        data.set(3, subCode);
-        return data;
+    protected byte[] toArray(){
+       return new byte[]{ type,length,code,subCode};
     }
 
 }

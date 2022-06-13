@@ -1,4 +1,4 @@
-package com.mu.client;
+package com.mu.server;
 
 import com.caio.mu.packets.ShowLoginAction;
 

@@ -1,4 +1,4 @@
-package com.mu.client;
+package com.mu.server;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
