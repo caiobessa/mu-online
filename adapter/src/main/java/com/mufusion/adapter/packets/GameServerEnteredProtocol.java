@@ -1,7 +1,8 @@
-package com.caio.mu.packets;
+package com.mufusion.adapter.packets;
 
 
-import com.caio.mu.packets.util.BooleanUtils;
+import com.mufusion.adapter.packets.util.BooleanUtils;
+import com.mufusion.adapter.packets.util.MuArraysUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +10,7 @@ import java.util.Arrays;
 
 @Getter
 @Setter
-public class GameServerEntered extends C1HeaderWithSubCode {
+public class GameServerEnteredProtocol extends C1HeaderWithSubCode {
 
     public static final Byte PLAYER_ID = (byte) 0x0200;
     public static final Byte HEADER_TYPE = (byte) 0xC1;
@@ -24,19 +25,20 @@ public class GameServerEntered extends C1HeaderWithSubCode {
     private Byte playerId = PLAYER_ID;
     private ClientVersion clientVersion = new ClientVersion();
 
-    public GameServerEntered() {
+    public GameServerEnteredProtocol() {
         super(HEADER_TYPE, LENGTH, CODE, SUB_CODE);
         this.success = true;
         this.clientId = getClientId();
     }
 
     public byte[] toArray() {
+        var packageHeader = super.toArray();
         var clientVersionAsArray = clientVersion.toArray();
-        var gameServerEnteredAsArray = Arrays.copyOf(super.toArray(), getLength());
+        var gameServerEnteredAsArray = Arrays.copyOf(packageHeader, getLength());
         gameServerEnteredAsArray[4] = (byte) new BooleanUtils().transformToByte(success);
         gameServerEnteredAsArray[5] = playerId;
         gameServerEnteredAsArray[6] = 0;
-        System.arraycopy( clientVersionAsArray, 0, gameServerEnteredAsArray, 7, clientVersionAsArray.length);
+        new MuArraysUtils().copy(7,gameServerEnteredAsArray, clientVersionAsArray);
         return gameServerEnteredAsArray;
     }
 

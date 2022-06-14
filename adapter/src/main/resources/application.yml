@@ -1,0 +1,8 @@
+spring.cloud.stream:
+  function:
+    definition: onAcceptClient
+  bindings:
+    onAcceptClient-in-0:
+      destination: accepted
+    sendClient-out-0:
+      destination: accepted

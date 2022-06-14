@@ -1,11 +1,8 @@
-package com.caio.mu.packets;
+package com.mufusion.adapter.packets;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

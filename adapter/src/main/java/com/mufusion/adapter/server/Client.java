@@ -1,18 +1,25 @@
-package com.mu.server;
+package com.mufusion.adapter.server;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class Client {
 
-    ByteBuffer bufferIn;
-    ByteBuffer bufferOut;
+    private ByteBuffer bufferIn;
+    private ByteBuffer bufferOut;
 
-    SelectionKey key;
-    SocketChannel socket;
-    String ipAddress;
+    private SelectionKey key;
+    private SocketChannel socket;
+    private String ipAddress;
 
     public Client(String ipAddress, SocketChannel socket, SelectionKey key) {
         this.ipAddress = ipAddress;

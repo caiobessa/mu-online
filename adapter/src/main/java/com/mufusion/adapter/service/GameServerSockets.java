@@ -1,7 +1,16 @@
-package com.mu.server;
+package com.mufusion.adapter.service;
 
-import com.caio.mu.packets.ShowLoginAction;
+import com.mufusion.adapter.packets.AcceptedClient;
+import com.mufusion.adapter.server.Client;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -11,11 +20,20 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Iterator;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Service
+@AllArgsConstructor
+@EnableAsync
+@Slf4j
 public class GameServerSockets {
 
-    public static void main(String[] args) throws IOException {
+    private final StreamBridge streamBridge;
+    private final ClientRepository clientRepository;
+
+    @Async
+    public Future<Boolean> start() throws IOException {
 
         AtomicBoolean running = new AtomicBoolean(true);
         int port = 55911;
@@ -73,15 +91,17 @@ public class GameServerSockets {
                         client.handleWrite();
                     }
                 } catch (Exception e) {
+                    log.info("Exeception on socket listener",e);
                     // Disconnect the user if we have any errors during processing, you can add your own custom logic here
                     client.disconnect();
                 }
 
             }
         }
+
     }
 
-    private static void accept(SelectionKey key) throws IOException {
+    private  void accept(SelectionKey key) throws IOException {
         // 'Accept' selection keys contain a reference to the parent server-socket channel rather than their own socket
         ServerSocketChannel channel = (ServerSocketChannel) key.channel();
 
@@ -109,6 +129,11 @@ public class GameServerSockets {
         Client client = new Client(ipAddress, socket, k);
         k.attach(client);
 
-        client.sendMessage(new ShowLoginAction().showLogin());
+        AcceptedClient acceptedClient = new AcceptedClient();
+        clientRepository.addClient(client,  acceptedClient.getId());
+
+
+        streamBridge.send("sendClient-out-0", acceptedClient);
+
     }
 }

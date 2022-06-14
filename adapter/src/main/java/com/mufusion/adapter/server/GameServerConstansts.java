@@ -1,4 +1,4 @@
-package com.mu.server;
+package com.mufusion.adapter.server;
 
 public class GameServerConstansts {
 

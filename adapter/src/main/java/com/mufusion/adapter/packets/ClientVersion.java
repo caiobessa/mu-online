@@ -1,4 +1,4 @@
-package com.caio.mu.packets;
+package com.mufusion.adapter.packets;
 
 public class ClientVersion {
 

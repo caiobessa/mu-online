@@ -1,4 +1,4 @@
-package com.caio.mu.packets.util;
+package com.mufusion.adapter.packets.util;
 
 public class BooleanUtils {
 
