@@ -14,6 +14,8 @@ import java.nio.channels.SocketChannel;
 @Setter
 public class Client {
 
+    private String id;
+
     private ByteBuffer bufferIn;
     private ByteBuffer bufferOut;
 
@@ -21,7 +23,7 @@ public class Client {
     private SocketChannel socket;
     private String ipAddress;
 
-    public Client(String ipAddress, SocketChannel socket, SelectionKey key) {
+    public Client(String id,String ipAddress, SocketChannel socket, SelectionKey key) {
         this.ipAddress = ipAddress;
         this.socket = socket;
         this.key = key;

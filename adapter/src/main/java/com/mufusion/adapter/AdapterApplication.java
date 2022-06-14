@@ -20,7 +20,7 @@ public class AdapterApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(AdapterApplication.class, args);
+        SpringApplication.run(com.mufusion.adapter.AdapterApplication.class, args);
     }
 
 }

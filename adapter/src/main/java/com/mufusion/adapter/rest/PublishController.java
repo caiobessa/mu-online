@@ -1,4 +1,4 @@
-package com.mufusion.adapter.controller.rest;
+package com.mufusion.adapter.rest;
 
 import lombok.AllArgsConstructor;
 import org.springframework.cloud.stream.function.StreamBridge;

@@ -13,10 +13,8 @@ public class C1HeaderWithSubCode {
     private Byte code;
     private Byte subCode;
 
-
-
-    protected byte[] toArray(){
-       return new byte[]{ type,length,code,subCode};
+    protected byte[] toArray() {
+        return new byte[]{type, length, code, subCode};
     }
 
 }

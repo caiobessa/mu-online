@@ -6,11 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -20,6 +18,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Iterator;
+import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -91,7 +90,7 @@ public class GameServerSockets {
                         client.handleWrite();
                     }
                 } catch (Exception e) {
-                    log.info("Exeception on socket listener",e);
+                    log.info("Exeception on socket listener", e);
                     // Disconnect the user if we have any errors during processing, you can add your own custom logic here
                     client.disconnect();
                 }
@@ -101,7 +100,7 @@ public class GameServerSockets {
 
     }
 
-    private  void accept(SelectionKey key) throws IOException {
+    private void accept(SelectionKey key) throws IOException {
         // 'Accept' selection keys contain a reference to the parent server-socket channel rather than their own socket
         ServerSocketChannel channel = (ServerSocketChannel) key.channel();
 
@@ -126,12 +125,11 @@ public class GameServerSockets {
 
         // Here you can bind an object to the key as an attachment should you so desire.
         // This could be a reference to an object or anything else.
-        Client client = new Client(ipAddress, socket, k);
+        Client client = new Client(UUID.randomUUID().toString(), ipAddress, socket, k);
         k.attach(client);
 
-        AcceptedClient acceptedClient = new AcceptedClient();
-        clientRepository.addClient(client,  acceptedClient.getId());
-
+        AcceptedClient acceptedClient = new AcceptedClient(client.getId());
+        clientRepository.addClient(client);
 
         streamBridge.send("sendClient-out-0", acceptedClient);
 
