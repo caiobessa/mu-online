@@ -3,8 +3,12 @@ package com.mufusion.adapter.server;// <copyright file="PipelinedSimpleModulusBa
 // </copyright>
 
 
+import lombok.Getter;
+
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+@Getter
 public class PipelinedSimpleModulusBase extends PacketPipeReaderBase {
     /// <summary>
     /// The xor key which is used as to 'encrypt' the size of each block.
@@ -19,10 +23,12 @@ public class PipelinedSimpleModulusBase extends PacketPipeReaderBase {
     private final int BitsPerByte = 8;
 
     private final int bitsPerValue = (BitsPerByte * 2) + 2;
-    private int DecryptedBlockSize = 8;
-    private int EncryptedBlockSize = 11;
-    private int[] EncryptionResult = new int[4];
+    private int decryptedBlockSize = 8;
+    private int encryptedBlockSize = 11;
+    private long[] encryptionResult = new long[4];
     private Counter counter = new Counter();
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PipelinedSimpleModulusBase"/> class.
@@ -31,16 +37,18 @@ public class PipelinedSimpleModulusBase extends PacketPipeReaderBase {
     protected PipelinedSimpleModulusBase(Variant variant) {
         if (variant == Variant.New) {
             // newer versions
-            this.DecryptedBlockSize = 8;
-            this.EncryptedBlockSize = 11;
-            this.EncryptionResult = new int[4];
+            this.decryptedBlockSize = 8;
+            this.encryptedBlockSize = 11;
+            this.encryptionResult = new long[4];
             this.counter = new Counter();
         } else {
-            this.DecryptedBlockSize = 32;
-            this.EncryptedBlockSize = 38;
-            this.EncryptionResult = new int[16];
+            this.decryptedBlockSize = 32;
+            this.encryptedBlockSize = 38;
+            this.encryptionResult = new long[16];
         }
     }
+
+
 
     @Override
     protected void readPacket(byte[] packet) {
@@ -104,12 +112,16 @@ public class PipelinedSimpleModulusBase extends PacketPipeReaderBase {
         this.counter.Reset();
     }
 
+    public byte getBlockSizeXorKey() {
+        return BlockSizeXorKey;
+    }
+
     /// <summary>
     /// Gets the byte offset in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.
     /// </summary>
     /// <param name="resultIndex">Index of the <see cref="EncryptionResult"/>.</param>
     /// <returns>The byte offset in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.</returns>
-    protected  int GetByteOffset(int resultIndex) {
+    protected  int getByteOffset(int resultIndex) {
         return getByteIndex(resultIndex) / BitsPerByte;
     }
 
@@ -133,7 +145,7 @@ public class PipelinedSimpleModulusBase extends PacketPipeReaderBase {
 /// </summary>
 /// <param name="resultIndex">Index of the <see cref="EncryptionResult"/>.</param>
 /// <returns>The the bit mask of the first byte (at the index of <see cref="GetByteOffset(int)"/>) in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.</returns>
-    protected int GetFirstBitMask(int resultIndex) {
+    protected int getFirstBitMask(int resultIndex) {
         return 0xFF >> getBitOffset(resultIndex);
     }
 
@@ -144,7 +156,7 @@ public class PipelinedSimpleModulusBase extends PacketPipeReaderBase {
 /// </summary>
 /// <param name="resultIndex">Index of the <see cref="EncryptionResult"/>.</param>
 /// <returns>The the bit mask of the first byte (at the index of <see cref="GetByteOffset(int)"/>) in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.</returns>
-    protected int GetRemainderBitMask(int resultIndex) {
+    protected int getRemainderBitMask(int resultIndex) {
         return (0xFF << (6 - getBitIndex(resultIndex)) & 0xFF) - ((0xFF << (8 - getBitIndex(resultIndex))) & 0xFF);
     }
 
@@ -173,8 +185,18 @@ public class PipelinedSimpleModulusBase extends PacketPipeReaderBase {
 /// <param name="packet">The packet.</param>
 /// <param name="decrypted">if set to <c>true</c> it is decrypted. Encrypted packets additionally contain a counter.</param>
 /// <returns>The size of the actual content.</returns>
-    protected int GetContentSize(byte[] packet, boolean decrypted) {
+    protected int getContentSize(byte[] packet, boolean decrypted) {
         var contentSize = packet.length - packet[3];
+
+        if (this.counter != null && decrypted) {
+            contentSize++;
+        }
+        return contentSize;
+    }
+
+    protected int getContentSize(ByteBuffer packet, boolean decrypted) {
+        var asArray = packet.array();
+        var contentSize = ArrayExtensions.getPacketSize(asArray) - ArrayExtensions.getPacketHeaderSize(asArray);
 
         if (this.counter != null && decrypted) {
             contentSize++;

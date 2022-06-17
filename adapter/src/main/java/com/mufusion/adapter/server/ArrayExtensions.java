@@ -109,8 +109,8 @@ public class ArrayExtensions {
     /// </summary>
     /// <param name="packet">The packet.</param>
     /// <returns>The size of the header.</returns>
-    public static int GetPacketHeaderSize(byte[] packet) {
-        return GetPacketHeaderSize(packet[0]);
+    public static int getPacketHeaderSize(byte[] packet) {
+        return getPacketHeaderSize(packet[0]);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class ArrayExtensions {
     /// </summary>
     /// <param name="packetPrefix">The packet prefix.</param>
     /// <returns>The size of the header.</returns>
-    public static int GetPacketHeaderSize(byte packetPrefix) {
+    public static int getPacketHeaderSize(byte packetPrefix) {
         switch (packetPrefix) {
             case (byte) 0xC1:
             case (byte) 0xC3:
@@ -137,7 +137,7 @@ public class ArrayExtensions {
     /// <param name="packet">The packet.</param>
     /// <returns>The type of the packet.</returns>
     public static byte GetPacketType(byte[] packet) {
-        return packet[GetPacketHeaderSize(packet)];
+        return packet[getPacketHeaderSize(packet)];
     }
 
     /// <summary>
@@ -146,8 +146,8 @@ public class ArrayExtensions {
     /// <param name="packet">The packet.</param>
     /// <returns>The sub type of the packet.</returns>
     public static byte GetPacketSubType(byte[] packet) {
-        if (packet.length > GetPacketHeaderSize(packet)) {
-            return packet[GetPacketHeaderSize(packet) + 1];
+        if (packet.length > getPacketHeaderSize(packet)) {
+            return packet[getPacketHeaderSize(packet) + 1];
         }
         return 0;
     }

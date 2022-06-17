@@ -22,6 +22,7 @@ public class Client {
     private SelectionKey key;
     private SocketChannel socket;
     private String ipAddress;
+    private ArrayExtensions arrayExtensions;
 
     public Client(String id,String ipAddress, SocketChannel socket, SelectionKey key) {
         this.ipAddress = ipAddress;
@@ -45,27 +46,64 @@ public class Client {
         }
     }
 
+
+
     public int handleRead() throws IOException {
         int bytesIn = 0;
         bytesIn = socket.read(bufferIn);
         if (bytesIn == -1) {
             throw new IOException("Socket closed");
         }
-        if (bytesIn > 0) {
+
+        if (bytesIn > 2) {
             bufferIn.flip();
             bufferIn.mark();
 
-            //  TODO: Do something here with the bytes besides printing them to console
-            while (bufferIn.hasRemaining()) {
-                System.out.print((char) bufferIn.get());
-            }
-            System.out.println();
-            // Do something with this value
+            // peek the length of the next packet
+            byte[] header = new byte[3];
+            bufferIn.slice(0, 3).get(header);
+            Integer length = arrayExtensions.getPacketSize(header);
+            if (length == 0) {
+                var exception = new IllegalArgumentException("error read packet");
 
-            bufferIn.compact();
+                // Notify our source, that we don't intend to read anymore.
+                //  socket.CompleteAsync(exception).ConfigureAwait(false);
+                bufferIn.compact();
+                throw exception;
+            }
+
+            if (length > 0 && bytesIn >= length) {
+                var packet = new byte[length];
+                ByteBuffer slice = bufferIn.slice(0, length);
+                new PipelinedSimpleModulusDecryptor().readRawPack(slice);
+
+                bufferIn = bufferIn.slice(bufferIn.get(length), bufferIn.remaining());
+                length = null;
+            }
         }
+
+
+        bufferIn.compact();
         return bytesIn;
     }
+
+
+
+
+//        if (bytesIn > 0) {
+//
+//
+//            //  TODO: Do something here with the bytes besides printing them to console
+//            while (bufferIn.hasRemaining()) {
+//                System.out.print((char) bufferIn.get());
+//            }
+//            System.out.println();
+//            // Do something with this value
+//
+//            bufferIn.compact();
+//        }
+//        return bytesIn;
+//    }
 
     public int handleWrite() throws IOException {
         bufferOut.flip();

@@ -1,5 +1,8 @@
 package com.mufusion.adapter.server;
 
+import lombok.Getter;
+
+@Getter
 public class Counter
 {
     private  byte _maxCount;

@@ -49,7 +49,7 @@ public class PipelinedXor32Decryptor extends PacketPipeReaderBase {
         // we just want to work on a span with the exact size of the packet.
         var target = new byte[packet.length];
 
-        var headerSize = ArrayExtensions.GetPacketHeaderSize(target);
+        var headerSize = ArrayExtensions.getPacketHeaderSize(target);
         for (var i = target.length - 1; i > headerSize; i--) {
             target[i] = (byte) (target[i] ^ target[i - 1] ^ this._xor32Key[i % 32]);
         }
