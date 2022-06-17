@@ -94,9 +94,10 @@ public class PipelinedSimpleModulusDecryptor extends PipelinedSimpleModulusBase 
         var headerSize = getPacketHeaderSize(rawMuPacket);
         var counterSize = getCounter() == null ? 0 : 1;
 
-        var span = ByteBuffer.allocate(maximumDecryptedSize);
+        var decrypted = ByteBuffer.allocate(maximumDecryptedSize);
 
-        var decrypted = this.DecryptPacketContent(rawMuPacket.slice(0, headerSize), rawMuPacket.slice(0, headerSize - counterSize)); // if we have a counter, we trick a bit by passing in a bigger span
+        var decryptedContentSize = this.DecryptPacketContent(rawMuPacket.slice(headerSize, rawMuPacket.remaining() - headerSize),
+                decrypted.slice(headerSize - counterSize, maximumDecryptedSize - headerSize)); // if we have a counter, we trick a bit by passing in a bigger span
 //        decrypted.
 //        decrypted = decrypted.Slice(0, decryptedContentSize + headerSize - counterSize);
 //        decrypted.SetPacketSize();
@@ -109,7 +110,7 @@ public class PipelinedSimpleModulusDecryptor extends PipelinedSimpleModulusBase 
         var rest = input;
         do
         {
-            rest.slice(0, getEncryptedBlockSize()).get(this._inputBuffer);
+            rest.slice(0, getEncryptedBlockSize() ).get(this._inputBuffer);
             var outputBlock = output.slice(sizeCounter, this.getDecryptedBlockSize());
             var blockSize = this.DecryptBlock(outputBlock);
             if (getCounter() != null && sizeCounter == 0 && outputBlock.get(0) != getCounter().get_counter()) {
