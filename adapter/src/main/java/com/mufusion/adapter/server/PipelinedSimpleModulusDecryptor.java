@@ -141,18 +141,18 @@ public class PipelinedSimpleModulusDecryptor extends PipelinedSimpleModulusBase 
                 getEncryptionResult()[i] = readInputBuffer(i);
             }
 //
-//            this.DecryptContent(outputBuffer);
+            this.decryptContent(outputBuffer);
 //
 //            return this.DecodeFinal(outputBuffer);
             return 0;
         }
 
-//    private void DecryptContent(ByteBuffer outputBuffer) {
-//        var keys = this._decryptionKeys;
-//        for (int i = this.EncryptionResult.Length - 1; i > 0; i--) {
-//            this.EncryptionResult[i - 1] = this.EncryptionResult[i - 1] ^ keys.XorKey[i - 1] ^ (this.EncryptionResult[i] & 0xFFFF);
-//        }
-//
+    private void decryptContent(ByteBuffer outputBuffer) {
+        var keys = this._decryptionKeys;
+        for (int i = getEncryptionResult().length - 1; i > 0; i--) {
+            getEncryptionResult()[i - 1] =getEncryptionResult()[i - 1] ^ keys.getXorKey()[i - 1] ^ (getEncryptionResult()[i] & 0xFFFF);
+        }
+
 //        var output = MemoryMarshal.Cast < byte,ushort > (outputBuffer);
 //        for (int i = 0; i < this.EncryptionResult.Length; i++) {
 //            uint result = keys.XorKey[i] ^ ((this.EncryptionResult[i] * keys.DecryptKey[i]) % keys.ModulusKey[i]);
@@ -162,7 +162,7 @@ public class PipelinedSimpleModulusDecryptor extends PipelinedSimpleModulusBase 
 //
 //            output[i] = (ushort) result;
 //        }
-//    }
+    }
 
     private long readInputBuffer(int resultIndex) {
 //        var byteOffset = GetByteOffset(resultIndex);

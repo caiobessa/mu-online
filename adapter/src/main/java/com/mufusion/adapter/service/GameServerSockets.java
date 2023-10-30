@@ -4,7 +4,6 @@ import com.mufusion.adapter.packets.AcceptedClient;
 import com.mufusion.adapter.server.Client;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class GameServerSockets {
 
-    private final StreamBridge streamBridge;
+    private final GameServerRepository gameServerRepostiory;
     private final ClientRepository clientRepository;
+
 
     @Async
     public Future<Boolean> start() throws IOException {
@@ -131,7 +131,7 @@ public class GameServerSockets {
         AcceptedClient acceptedClient = new AcceptedClient(client.getId());
         clientRepository.addClient(client);
 
-        streamBridge.send("sendClient-out-0", acceptedClient);
+        gameServerRepostiory.sendInboundMessage(acceptedClient);
 
     }
 }
